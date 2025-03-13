@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Arial', sans-serif;
+    }
+    
+    .stopwatch-container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px 40px;
+      text-align: center;
+      width: 320px;
+    }
+    
+    .display {
+      font-size: 48px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #333;
+      font-family: monospace;
+    }
+    
+    .controls button {
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+      padding: 12px 20px;
+      transition: background-color 0.3s;
+    }
+    
+    .controls button:hover {
+      background-color: #45a049;
+    }
+    
+    .controls button.pause {
+      background-color: #ff9800;
+    }
+    
+    .controls button.pause:hover {
+      background-color: #e68a00;
+    }
+    
+    .controls button.reset {
+      background-color: #f44336;
+    }
+    
+    .controls button.reset:hover {
+      background-color: #d32f2f;
+    }
+    
+    .instructions {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e9f7ef;
+      border-radius: 6px;
+      color: #333;
+      text-align: left;
+    }
+    
+    .instructions p {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+    
+    kbd {
+      background-color: #f1f1f1;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+      color: #333;
+      display: inline-block;
+      font-size: 12px;
+      margin: 0 2px;
+      padding: 2px 5px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="stopwatch-container">
+    <h2>Sekundomer</h2>
+    <div class="display" id="display">00:00:00</div>
+    <div class="controls">
+      <button id="startPauseBtn">Старт</button>
+      <button id="resetBtn" class="reset">Сброс</button>
+    </div>
+    <div class="instructions">
+      <p><kbd>Пробел</kbd> - Старт/Пауза</p>
+      <p><kbd>Ctrl</kbd> - Сброс</p>
+    </div>
+  </div>
+  <script>
+    const displayEl = document.getElementById('display');
+    const startPauseBtn = document.getElementById('startPauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval = null;
+    let isRunning = false;
+    function formatTime(timeInMs) {
+      let hours = Math.floor(timeInMs / 3600000);
+      let minutes = Math.floor((timeInMs % 3600000) / 60000);
+      let seconds = Math.floor((timeInMs % 60000) / 1000);
+      
+      hours = hours.toString().padStart(2, '0');
+      minutes = minutes.toString().padStart(2, '0');
+      seconds = seconds.toString().padStart(2, '0');
+      
+      return `${hours}:${minutes}:${seconds}`;
+    }
+    function toggleStartPause() {
+      if (isRunning) {
+        clearInterval(timerInterval);
+        startPauseBtn.textContent = 'Старт';
+        startPauseBtn.classList.remove('pause');
+      } else {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(updateTime, 10);
+        startPauseBtn.textContent = 'Пауза';
+        startPauseBtn.classList.add('pause');
+      }
+      isRunning = !isRunning;
+    }
+    function resetStopwatch() {
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      displayEl.textContent = formatTime(0);
+      isRunning = false;
+      startPauseBtn.textContent = 'Старт';
+      startPauseBtn.classList.remove('pause');
+    }
+    function updateTime() {
+      elapsedTime = Date.now() - startTime;
+      displayEl.textContent = formatTime(elapsedTime);
+    }
+    startPauseBtn.addEventListener('click', toggleStartPause);
+    resetBtn.addEventListener('click', resetStopwatch);
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space') {
+        event.preventDefault(); 
+        toggleStartPause();
+      }
+      if (event.ctrlKey) {
+        resetStopwatch();
+      }
+    });
+  </script>
+</body>
+</html>

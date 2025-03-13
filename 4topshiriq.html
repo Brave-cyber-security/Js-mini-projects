@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horizontal Volume Indicator</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f5f5f5;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    
+    .container {
+      width: 300px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    
+    .track {
+      width: 300px;
+      height: 6px;
+      background-color: #ddd;
+      border-radius: 3px;
+      position: relative;
+    }
+    
+    .indicator {
+      position: absolute;
+      left: 0;
+      height: 100%;
+      width: 50%;  
+      background-color: #1e90ff;
+      border-radius: 3px;
+      transition: width 0.1s ease;
+    }
+    
+    .dot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #1e90ff;
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 0;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .instructions {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    
+    .value {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="track">
+      <div class="indicator" id="indicator">
+        <div class="dot"></div>
+      </div>
+    </div>
+    <div class="value" id="value">50%</div>
+    <div class="instructions">
+      <p>Scroll up: Ovoz ko'tarish</p>
+      <p>Scroll down: Ovoz pasayishi</p>
+    </div>
+  </div>
+
+  <script>
+    const indicator = document.getElementById('indicator');
+    const valueDisplay = document.getElementById('value');
+    let value = 50; 
+    const minValue = 0;
+    const maxValue = 100;
+    const step = 2; 
+    function updateIndicator() {
+      indicator.style.width = `${value}%`;
+      valueDisplay.textContent = `${value}%`;
+    }
+    document.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      if (event.deltaY < 0) {
+        value = Math.min(value + step, maxValue);
+      } else {
+        value = Math.max(value - step, minValue);
+      }
+      updateIndicator();
+    });
+    updateIndicator();
+  </script>
+</body>
+</html>

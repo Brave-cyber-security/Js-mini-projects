@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      overflow: hidden;
+    }
+    .road {
+      width: 100%;
+      height: 100%;
+      background-color: #444;
+      position: relative;
+      overflow: hidden;
+    }
+    .divider {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 100%;
+      background-color: #333;
+    }
+    .lane-marking {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 40px;
+      background-color: yellow;
+      margin-bottom: 30px;
+    }
+    .car {
+      position: absolute;
+      width: 40px;
+      height: 70px;
+      background-color: red;
+      border-radius: 8px;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: left 0.1s ease;
+    }
+    .instructions {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="road" id="road">
+      <div class="divider"></div>
+      <div class="car" id="car"></div>
+    </div>
+    <div class="instructions">
+      <p>W:Tog'riga</p>
+      <p>A:Chapga</p>
+      <p>D: O'nga</p>
+    </div>
+  </div>
+
+  <script>
+    const road = document.getElementById('road');
+    const car = document.getElementById('car');
+    let carPosition = 50; 
+    let animationActive = false;
+    let animationId = null;
+    function createLaneMarkings() {
+      const roadHeight = road.offsetHeight;
+      const markingCount = Math.ceil(roadHeight / 70) + 1; 
+      
+      for (let i = 0; i < markingCount; i++) {
+        const marking = document.createElement('div');
+        marking.classList.add('lane-marking');
+        marking.style.top = (i * 70) - 40 + 'px'; 
+        road.appendChild(marking);
+      }
+    }
+    function animateRoad() {
+      const markings = document.querySelectorAll('.lane-marking');
+      markings.forEach(marking => {
+        let topPosition = parseInt(marking.style.top) || 0;
+        topPosition += 5;
+        if (topPosition > road.offsetHeight) {
+          topPosition = -40;
+        }
+        
+        marking.style.top = topPosition + 'px';
+      });
+      
+      if (animationActive) {
+        animationId = requestAnimationFrame(animateRoad);
+      }
+    }
+    document.addEventListener('keydown', (event) => {
+      switch(event.key.toLowerCase()) {
+        case 'w': 
+          if (!animationActive) {
+            animationActive = true;
+            animateRoad();
+          }
+          break;
+        case 'a': 
+          if (carPosition > 20) { 
+            carPosition -= 5;
+            car.style.left = carPosition + '%';
+          }
+          break;
+        case 'd': 
+          if (carPosition < 80) { 
+            carPosition += 5;
+            car.style.left = carPosition + '%';
+          }
+          break;
+      }
+    });
+    
+    document.addEventListener('keyup', (event) => {
+      if (event.key.toLowerCase() === 'w') {
+        animationActive = false;
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+        }
+      }
+    });
+    createLaneMarkings();
+  </script>
+</body>
+</html>
